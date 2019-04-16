@@ -1,0 +1,148 @@
+/* 共通 */
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  color: #777777;
+}
+
+body {
+  margin: 0;
+}
+
+img {
+  width: 50%;
+  height: auto;
+}
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 解析ボタンバー */
+.btn_bar {
+  height: 100%;
+  width: 110px;
+  background: #3abc97;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .ana_btns_list {
+    padding: 0;
+    list-style-type: none;
+    .ana_btn_wrap {
+      margin: 30px 0;
+    }
+  }
+}
+
+/* メインカラム */
+.main {
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+
+  /* ページヘッダ */
+  .page_header {
+    height: 60px;
+    border-bottom: solid 1px lightgray;
+    padding: 5px 0 0 120px;
+    text-align: center;
+
+    .logo {
+      margin: 0 auto;
+    }
+  }
+
+  /* コンテンツ */
+  .contents {
+    max-width: 800px;
+    margin: 20px auto 0;
+    padding-top: 20px;
+    padding-left: 110px;
+
+    /* 解析対象画像 */
+    .ana_img_wrap {
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    /* 解析結果 */
+    .ana_result_wrap {
+      border-top: solid 1px lightgray;
+      margin-top: 30px;
+
+      .results {
+        border-bottom: solid 1px lightgray;
+        margin: 0 auto;
+
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .result_img {
+          width: 40%;
+          padding: 10px;
+          text-align: center;
+        }
+
+        .detail_info {
+          width: 60%;
+          padding-left: 20px;
+        }
+      }
+    }
+  }
+}
+/* ページフッタ */
+.page_footer {
+  height: 40px;
+  width: 100%;
+  border-top: solid 1px lightgray;
+  margin-top: 30px;
+  padding-top: 5px;
+  padding-left: 110px;
+  text-align: center;
+}
+
+@media screen and (max-width: 545px) {
+  .main {
+    order: 1;
+    width: 100%;
+
+    .page_header {
+      padding: 0;
+    }
+    .contents {
+      padding-left: 0;
+    }
+  }
+
+  .btn_bar {
+    order: 2;
+    width: 100%;
+    margin-top: 20px;
+    position: static;
+
+    .ana_btns_list {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  .page_footer {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    padding-left: 0;
+  }
+}

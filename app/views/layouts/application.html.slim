@@ -1,0 +1,58 @@
+doctype html
+html
+  head
+    title ImgAnalyzer
+    =csrf_meta_tags
+    =stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    =javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+  body
+    .wrapper
+      // 解析ボタンバー
+      .btn_bar
+        ul.ana_btns_list
+          li.ana_btn_wrap
+            input type="button" value="色解析"
+          li.ana_btn_wrap
+            input type="button" value="顔解析"
+          li.ana_btn_wrap
+            input type="button" value="形解析"
+
+      // メインカラム
+      .main
+        header.page_header
+          h1.logo
+            | Google 画像解析テスト
+        // コンテンツ
+        .contents
+          // 解析対象画像
+          .ana_img_wrap
+            = image_tag "f72ad0e4f15c60e70d85c719c8cf509c.jpg", width: "700", height: "394"
+            form
+              input type="file" size="30"
+          // 解析結果
+          .ana_result_wrap
+            .results
+              .result_img
+                = image_tag "0007_73382138_p00.jpg", width: "370", height: "208"
+              .detail_info
+                p
+                  | 解析結果1
+                a
+                  | あああああああああああああああああああ
+            .results
+              .result_img
+                = image_tag "サイズ変更_144215.png", width: "370", height: "208"
+              .detail_info
+                p
+                  | 解析結果2
+                a
+                  | あああああああああああああああああああ
+          p
+            |TOPへ戻る
+
+      footer.page_footer
+        small
+          | this app by komarin
+
+
+/ = yield

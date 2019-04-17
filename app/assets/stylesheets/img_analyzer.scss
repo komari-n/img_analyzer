@@ -74,6 +74,10 @@ img {
     .ana_img_wrap {
       text-align: center;
       margin: 0 auto;
+      .drop_info {
+        margin: 0;
+        padding-top: 20px;
+      }
     }
 
     /* 解析結果 */
@@ -145,4 +149,20 @@ img {
     margin: 0;
     padding-left: 0;
   }
+}
+
+/* -------------------- 検証中 --------------------*/
+#drop_area {
+  border: solid 3px rgb(156, 156, 156);
+  background: #ddd;
+  font-size: 30px;
+  font-weight: bold;
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.drag_enter {
+  background: rgb(252, 207, 164);
 }

@@ -1,2 +1,13 @@
-h1 ImgAnalyzer#home
-p Find me in app/views/img_analyzer/home.html.slim
+// 解析対象画像
+.ana_img_wrap
+  .ana_img_area
+    img#target_img src="#" width="700" height="394"
+
+  form action="" method="post" enctype="multipart/form-data"
+    #drop_area
+      #drop_area_wrap
+        p.drop_info
+          |ここにファイルをドロップ
+        p
+          |または
+        input#file_input type="file" value="ファイルを選択" name="image"

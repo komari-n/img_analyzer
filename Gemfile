@@ -1,20 +1,22 @@
 source 'https://rubygems.org'
 
-gem 'bootstrap-sass', '3.4.1 '
-gem 'coffee-rails', '4.2.2'
-gem 'dotenv-rails', '2.7.2'
-gem 'google-api-client', '~> 0.11'
-gem 'jbuilder',     '2.7.0'
-gem 'jquery-rails', '4.3.1'
-gem 'puma',         '3.9.1'
 gem 'rails',        '5.1.6'
 gem 'sass-rails',   '5.0.6'
+gem 'coffee-rails', '4.2.2' # 使わないかも
+gem 'jbuilder',     '2.7.0'
+gem 'puma',         '3.9.1'
 gem 'turbolinks',   '5.0.1'
 gem 'uglifier',     '3.2.0'
-gem 'slim-rails', '3.2.0'
+
+gem 'slim-rails',          '3.2.0'
+gem 'jquery-rails',        '4.3.1'
+gem 'bootstrap-sass',      '3.4.1' # 使わないかも
+gem 'google-cloud-vision', '0.32.2'
+gem 'dotenv-rails',        '2.7.2'
+gem 'chart-js-rails',      '0.1.6'
 
 group :development, :test do
-  gem 'byebug', '9.0.6', platform: :mri
+  gem 'byebug',       '9.0.6', platform: :mri
   gem 'sqlite3',      '1.3.13'
 end
 

@@ -22,3 +22,5 @@
 
 .byebug_history
 /vendor/bundle
+.env
+cloud_v_keys.json

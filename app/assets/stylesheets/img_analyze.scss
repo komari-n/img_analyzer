@@ -13,8 +13,12 @@ body {
 }
 
 img {
-  width: 50%;
-  height: auto;
+  width: auto;
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
 }
 
 .wrapper {
@@ -41,6 +45,24 @@ img {
     list-style-type: none;
     .ana_btn_wrap {
       margin: 30px 0;
+
+      /* 解析ボタン */
+      .btn_stickey {
+        display: inline-block;
+        padding: 0.3em 1em;
+        text-decoration: none;
+        font-weight: bold;
+        color: #777777;
+        background: #ddd;
+        border: solid 2px #777777;
+        border-radius: 3px;
+        transition: 0.4s;
+        &:hover {
+          background: #999999;
+          color: black;
+          border: solid 2px black;
+        }
+      }
     }
   }
 }
@@ -65,7 +87,7 @@ img {
 
   /* コンテンツ */
   .contents {
-    max-width: 800px;
+    max-width: 1400px;
     margin: 20px auto 0;
     padding-top: 20px;
     padding-left: 110px;
@@ -74,10 +96,14 @@ img {
     .ana_img_wrap {
       text-align: center;
       margin: 0 auto;
-      .drop_info {
-        margin: 0;
-        padding-top: 20px;
-      }
+
+      display: flex;
+      justify-content: center;
+    }
+
+    .drop_info {
+      margin: 0;
+      padding-top: 20px;
     }
 
     /* 解析結果 */
@@ -118,7 +144,15 @@ img {
   text-align: center;
 }
 
-@media screen and (max-width: 545px) {
+@media screen and (max-width: 1000px) {
+  /* -------------------- 検証中 --------------------*/
+  .ana_img_wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 700px) {
   .main {
     order: 1;
     width: 100%;
@@ -154,6 +188,7 @@ img {
 /* -------------------- 検証中 --------------------*/
 #drop_area {
   border: solid 3px rgb(156, 156, 156);
+  margin-top: 20px;
   background: #ddd;
   font-size: 30px;
   font-weight: bold;
@@ -165,4 +200,44 @@ img {
 
 .drag_enter {
   background: rgb(252, 207, 164);
+}
+
+.ana_img_area {
+  height: 394px;
+  width: 700px;
+  background: lightcoral;
+}
+.result_area {
+  height: 394px;
+  width: 700px;
+  background: lightcyan;
+
+  display: flex;
+  flex-wrap: wrap;
+}
+#analize {
+  margin: 0 auto;
+  max-width: 700px;
+}
+.result_header {
+  width: 700px;
+  height: 50px;
+  background: lightgreen;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.pie {
+  width: 500px;
+  height: 344px;
+  margin: 0;
+  background: lightgoldenrodyellow;
+}
+.rgb_info {
+  width: 200px;
+  height: 344px;
+  margin: 0;
+  background: lightseagreen;
 }

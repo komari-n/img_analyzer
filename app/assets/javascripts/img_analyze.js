@@ -1,8 +1,13 @@
 $(function() {
-  var dropArea = $("#drop_area");
-  var fileInput = $("#file_input");
+  // 解析ボタン イベントリスナー
+  var anaBtn = $(".btn_stickey");
+  anaBtn.on("click", function() {
+    $("#ana_type").val(anaBtn.attr("name"));
+  });
 
   // ドロップ領域 イベントリスナー
+  var dropArea = $("#drop_area");
+  var fileInput = $("#file_input");
   dropArea
     .on("dragover", onDragOver)
     .on("dragleave", onDragLeave)
@@ -38,12 +43,8 @@ $(function() {
     var dataTransfer = e.originalEvent.dataTransfer;
     // ローカル画像ファイルの場合
     organizeFiles(dataTransfer.files);
-    // htmlURLの場合 TOOD クロスドメイン引っかかる railsでリクエスト JSONPでリクエスト
-    // alert(e.originalEvent.dataTransfer.getData("text/html"));
-    // alert(e.originalEvent.dataTransfer.getData("text/uri-list"));
-    // alert(e.originalEvent.dataTransfer.getData("text/plain"));
-    //var url = dataTransfer.getData("text/uri-list");
-    // 画面内画像の場合
+    // TODO: [2]htmlURLの場合  クロスドメイン引っかかる railsでリクエスト JSONPでリクエスト
+    // TODO: [3]画面内画像の場合
   }
 
   // ドロップ領域の表示制御
@@ -55,12 +56,12 @@ $(function() {
     dropAreaWrap.removeClass("drag_enter");
   }
 
-  // 画像成型 TODO 何か違う
+  // 画像成型 TODO [*]何か違う
   function organizeFiles(files) {
     // ファイルinputに設定
     var domFileInput = fileInput.get(0);
     domFileInput.files = files;
-    // 画面出力 TODO FileListになっている for文 バリデーション
+    // 画面出力 TODO: [2]FileListになっている for文 バリデーション size1より大きいと嫌
     outputImage(files[0]);
   }
 

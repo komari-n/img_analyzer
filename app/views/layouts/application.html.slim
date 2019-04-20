@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title ImgAnalyzer
+    title ImgAnalize
     =csrf_meta_tags
     =stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     =javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
@@ -10,18 +10,31 @@ html
       // 解析ボタンバー
       .btn_bar
         ul.ana_btns_list
+          / li.ana_btn_wrap
+          /   input type="button" form="analize" name="detail" value="詳細解析"
           li.ana_btn_wrap
-            input type="button" value="色解析"
+            / 色解析
+            a href="javascript:ana_form.submit()" class="btn_stickey" name="IMAGE"
+              | color!
           li.ana_btn_wrap
-            input type="button" value="顔解析"
+            / 顔解析
+            a href="javascript:ana_form.submit()" class="btn_stickey" name="FACE"
+              | face!
           li.ana_btn_wrap
-            input type="button" value="形解析"
+            / テキスト抽出
+            a href="javascript:ana_form.submit()" class="btn_stickey" name="TEXT"
+              | text!
+          li.ana_btn_wrap
+            / 関連画像検索
+            a href="javascript:ana_form.submit()" class="btn_stickey" name="WEB"
+              | web!
 
       .main
         // ヘッダ
         header.page_header
           h1.logo
-            | Google 画像解析テスト
+            a href=root_path
+              |Google 画像解析テスト
         // コンテンツ
         .contents
           = yield

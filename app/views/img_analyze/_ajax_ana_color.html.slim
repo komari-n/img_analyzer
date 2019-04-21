@@ -1,0 +1,36 @@
+.result_header
+  h2 Dominant Score
+/ Chart.jsで円グラフを表示
+.pie 
+  / 描画領域
+  canvas#color_chart
+
+  javascript:
+    var colors = #{{@results.to_json}};
+    var total_score = colors.shift();
+    var rgb_list = [];
+    var percentage_list = [];
+
+    for(var i=0; i < colors.length; i++){
+      rgb_list.push(colors[i]['rgb']);
+      percentage_list.push(colors[i]['percentage']);
+    }
+
+    var ctx = document.getElementById('color_chart');
+    var colorChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        datasets: [{
+          backgroundColor: rgb_list,
+          data: percentage_list
+        }]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'TOTAL SCORE : ' + total_score['total_score']
+        }
+      }
+    });
+.rgb_info
+  | information

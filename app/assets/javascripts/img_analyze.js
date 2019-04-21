@@ -1,6 +1,6 @@
 $(function() {
   // 解析ボタン イベントリスナー
-  var anaBtn = $(".btn_stickey");
+  var anaBtn = $(".ana_btn");
   anaBtn.on("click", function() {
     $("#ana_type").val(anaBtn.attr("name"));
   });

@@ -1,4 +1,4 @@
-/* 共通 */
+// 共通
 *,
 *:before,
 *:after {
@@ -7,14 +7,12 @@
 
   color: #777777;
 }
+*:focus {
+  outline: none;
+}
 
 body {
   margin: 0;
-}
-
-img {
-  width: auto;
-  height: 100%;
 }
 
 a {
@@ -26,7 +24,7 @@ a {
   flex-wrap: wrap;
 }
 
-/* 解析ボタンバー */
+// 解析ボタンバー
 .btn_bar {
   height: 100%;
   width: 110px;
@@ -40,40 +38,52 @@ a {
   justify-content: center;
   align-items: center;
 
+  box-shadow: 0 0 2px 0;
+
   .ana_btns_list {
     padding: 0;
     list-style-type: none;
     .ana_btn_wrap {
       margin: 30px 0;
 
-      /* 解析ボタン */
+      // 解析ボタン
       .ana_btn {
-        display: inline-block;
         padding: 0.3em 1em;
-        text-decoration: none;
-        font-weight: bold;
-        color: #777777;
-        background: #ddd;
         border: solid 2px #777777;
         border-radius: 3px;
+
+        font-weight: bold;
+        font-size: 18px;
+        color: #777777;
+        background: #ddd;
+
+        display: inline-block;
         transition: 0.4s;
+
+        box-shadow: 0 2px 2px 0 #666666;
         &:hover {
           background: #999999;
           color: black;
           border: solid 2px black;
+          box-shadow: 0 2px 0 0 black;
+        }
+        &:active {
+          transform: translate(0, 2px);
+          transition: initial;
+          box-shadow: 0 0 0 0;
         }
       }
     }
   }
 }
 
-/* メインカラム */
+// メインカラム
 .main {
   width: 100%;
   height: auto;
   margin: 0 auto;
 
-  /* ページヘッダ */
+  // ページヘッダ
   .page_header {
     height: 60px;
     border-bottom: solid 1px lightgray;
@@ -85,55 +95,123 @@ a {
     }
   }
 
-  /* コンテンツ */
+  // コンテンツ
   .contents {
     max-width: 1400px;
     margin: 20px auto 0;
     padding-top: 20px;
     padding-left: 110px;
 
-    /* 解析対象画像 */
+    // 解析エリアラップ
     .ana_img_wrap {
       text-align: center;
       margin: 0 auto;
 
       display: flex;
       justify-content: center;
-    }
 
-    .drop_info {
-      margin: 0;
-      padding-top: 20px;
-    }
+      // 解析画像エリア
+      .ana_img_area {
+        padding: 10px;
+        //background: lightcoral;
 
-    /* 解析結果 */
-    .ana_result_wrap {
-      border-top: solid 1px lightgray;
-      margin-top: 30px;
+        #target_img {
+          max-width: 394px;
+          max-height: 700px;
+          vertical-align: middle;
+          box-shadow: 0 0 3px 0;
+          border-radius: 10px;
+        }
+      }
 
-      .results {
-        border-bottom: solid 1px lightgray;
-        margin: 0 auto;
+      // 解析結果エリア
+      .result_area {
+        padding: 10px;
 
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
 
-        .result_img {
-          width: 40%;
+        // ajaxレスポンスhtml
+        .response_html {
+          max-height: 394px;
+          max-width: 700px;
           padding: 10px;
-          text-align: center;
-        }
+          box-shadow: 0 0 3px 0;
+          border-radius: 10px;
+          //background: lightcyan;
 
-        .detail_info {
-          width: 60%;
-          padding-left: 20px;
+          // 結果ヘッダ
+          .result_header {
+            //background: lightgreen;
+            width: 100%;
+            height: 12%;
+            h2 {
+              margin: 0 auto;
+            }
+          }
+
+          // 円グラフ
+          .pie {
+            height: 88%;
+            margin: 0;
+            //background: lightpink;
+
+            .chart_wrapper {
+              width: 100%;
+              height: 80%;
+              position: relative;
+            }
+
+            .rgb_info {
+              margin: 0;
+              padding-top: 20px;
+              //background: rgb(204, 182, 219);
+
+              .color_bar {
+                width: 80%;
+                height: 15px;
+                margin: 0 auto;
+              }
+              p,
+              .rgb {
+                font-weight: bold;
+                margin: 0 auto;
+              }
+            }
+          }
         }
       }
     }
   }
 }
-/* ページフッタ */
+
+// フォーム
+#analize {
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 0 20px;
+  max-width: 700px;
+
+  // ドロップエリア
+  #drop_area {
+    border: solid 3px rgb(156, 156, 156);
+    background: #ddd;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    p {
+      margin-bottom: 0;
+    }
+    .drop_info {
+      margin: 0;
+      padding-top: 20px;
+    }
+  }
+}
+.drag_enter {
+  background: rgb(252, 207, 164);
+}
+
+// ページフッタ
 .page_footer {
   height: 40px;
   width: 100%;
@@ -174,6 +252,11 @@ a {
     .ana_btns_list {
       display: flex;
       flex-wrap: wrap;
+      justify-content: space-between;
+
+      .ana_btn_wrap {
+        margin: 10px;
+      }
     }
   }
 
@@ -186,58 +269,96 @@ a {
 }
 
 /* -------------------- 検証中 --------------------*/
-#drop_area {
-  border: solid 3px rgb(156, 156, 156);
-  margin-top: 20px;
-  background: #ddd;
-  font-size: 30px;
+
+// ローディング画面
+.load_screen {
+  width: 100%;
+  height: 100%;
+  background: rgba(19, 18, 18, 0.747);
+
+  position: fixed;
+  z-index: 100;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner_area {
+  width: 280px;
+  height: 220px;
+  border-radius: 30px;
+  background: whitesmoke;
+  box-shadow: 0 0 2px 0 inset;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.load_msg {
+  padding-bottom: 20px;
+  font-size: 25px;
   font-weight: bold;
-
-  p {
-    margin-bottom: 0;
-  }
+  text-align: center;
 }
 
-.drag_enter {
-  background: rgb(252, 207, 164);
-}
-
-.ana_img_area {
-  height: 394px;
-  width: 700px;
-  background: lightcoral;
-}
-.result_area {
-  height: 394px;
-  width: 700px;
-  background: lightcyan;
-
-  display: flex;
-  flex-wrap: wrap;
-}
-#analize {
-  margin: 0 auto;
-  max-width: 700px;
-}
-.result_header {
-  width: 700px;
-  height: 50px;
-  background: lightgreen;
-
-  h2 {
-    margin: 0;
-  }
-}
-
-.pie {
-  width: 500px;
-  height: 344px;
-  margin: 0;
-  background: lightgoldenrodyellow;
-}
-.rgb_info {
+.spinner {
   width: 200px;
-  height: 344px;
-  margin: 0;
-  background: lightseagreen;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.spinner > div {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+  margin-right: 10px;
+  background-color: rgb(230, 94, 94);
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  background-color: rgb(121, 230, 94);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+.spinner .bounce3 {
+  margin-left: 10px;
+  background-color: rgb(94, 210, 230);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
 }

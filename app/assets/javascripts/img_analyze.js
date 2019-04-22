@@ -3,6 +3,13 @@ $(function() {
   var anaBtn = $(".ana_btn");
   anaBtn.on("click", function() {
     $("#ana_type").val(anaBtn.attr("name"));
+    $(".load_screen").css("display", "flex");
+  });
+
+  // TODO: [2] バリデエラー時とかにも非表示にするよう
+  $("#analize").on("ajax:complete", function() {
+    // リクエスト完了時に非表示
+    $(".load_screen").fadeOut(1200);
   });
 
   // ドロップ領域 イベントリスナー

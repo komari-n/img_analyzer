@@ -37,17 +37,16 @@ class ImgAnalyze
                 items = i.to_h
                 items[:color].delete(:alpha)
 
-                # rgb(123.0, 45.0, 89.0)rgb(123, 45, 89)みたいに成形
                 # スコアは小数点2位を四捨五入
                 rgb   = "rgb(#{items[:color].values.join(", ")})".gsub('.0', '')
-                # TODO[2]: 丸まらない場合がある float * 100 をしているから？ bigDecimal使う
                 score = (items[:score] * 100).round(1)
 
                 responses << {rgb: rgb, score: score}
                 total_score += score
             end
+            # トータルスコアは小数点2位を四捨五入
+            total_score = total_score.round(1)
 
-            # TODO: [1]トータルスコアに対する各スコアの割合 rgbはintじゃないと？ スコア丸め
             responses.each_with_index do |view_item, idx|
                 # BigDecimalで計算
                 dec_score = "#{view_item[:score]}".to_d
@@ -57,11 +56,11 @@ class ImgAnalyze
                 # 差がある場合は 切り捨てた数値が一番大きい色のパーセンテージにプラスする
                 # 差が0.1の場合と0.2の場合があったりする？→誤差率の算出方法？
                 percentage = ( ( dec_score.div( dec_total, 4 ) ).to_f * 100 )
-                # パーセンテージは小数点2位を四捨五入 整数で表せる値も小数のままにしておく
+                # パーセンテージは小数点2位を四捨五入
                 responses[idx][:percentage] = percentage.round(1)
             end
 
-            # トータルスコアを先頭に追加して返却
+            # トータルスコアを先頭に追加
             return responses.unshift( total_score: total_score )
         when :CROP
             # TODO: [3]クロップヒントレスポ成形処理

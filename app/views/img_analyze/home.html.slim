@@ -1,3 +1,5 @@
+// メッセージエリア
+.msg_area
 .ana_img_wrap
   // 解析対象画像領域
   .ana_img_area
@@ -15,6 +17,6 @@
         |ここにファイルをドロップ
       p
         |または
-      input#file_input type="file" value="ファイルを選択" name="file" form="analize"
+      input#file_input type="file" accept="image/jpeg,image/png,image/gif,image/bmp,.ico" value="ファイルを選択" name="file" form="analize"
       // value="何解析を指定したか"
       input#ana_type type="hidden" name="type" value=""

@@ -7,9 +7,9 @@ class ImgAnalyzeController < ApplicationController
       # ajaxの場合
       img_analyze = ImgAnalyze.new()
       @results = img_analyze.analize(params[:file], params[:type])
-      # TODO: [2]エラー処理 そもそもこのif文はいらないかも？？
     else
-      # ajax以外の場合
+      # ajax以外
+      render 'home'
     end
   end
 

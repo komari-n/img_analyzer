@@ -41,8 +41,9 @@ html
         // ヘッダ
         header.page_header
           h1.logo
-            a href=root_path
+            a href=root_path onclick="location.reload();return false"
               |Google 画像解析テスト
+              
         // コンテンツ
         .contents
           = yield
@@ -50,4 +51,4 @@ html
       // フッタ
       footer.page_footer
         small
-          | this app by komarin
+          | this is test app

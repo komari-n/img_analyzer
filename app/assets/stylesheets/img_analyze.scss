@@ -95,6 +95,30 @@ a {
     }
   }
 
+  // メッセージエリア
+  .msg_area {
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+    padding: 5px;
+    border: solid 2px rgb(238, 109, 109);
+    border-radius: 5px;
+    background: rgb(236, 186, 186);
+    text-align: left;
+    display: none;
+
+    ul {
+      margin: 0;
+
+      .msg_text {
+        margin: 0;
+        font-size: 16px;
+        font-weight: bold;
+        list-style: none;
+      }
+    }
+  }
+
   // コンテンツ
   .contents {
     max-width: 1400px;
@@ -105,7 +129,7 @@ a {
     // 解析エリアラップ
     .ana_img_wrap {
       text-align: center;
-      margin: 0 auto;
+      margin: 20px 0 auto;
 
       display: flex;
       justify-content: center;

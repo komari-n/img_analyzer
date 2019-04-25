@@ -30,7 +30,7 @@ class ImgAnalyze
         # ImageAnnotator インスタンス生成
         image_annotator = Google::Cloud::Vision::ImageAnnotator.new(
             version: :v1,
-            credentials: ENV["GOOGLE_APPLICATION_CREDENTIALS"]
+            credentials: JSON.parse(ENV["GOOGLE_APPLICATION_CREDENTIALS"])
         )
         # APIリクエスト作成
         base64image = file.read # TODO: 画像かhtmlURLか判別して content: source: 分岐させる

@@ -35,4 +35,9 @@ group :test do
   gem 'rails-controller-testing', '1.0.2'
 end
 
+group :production do
+  gem 'pg', '0.20.0'
+end
+
+
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

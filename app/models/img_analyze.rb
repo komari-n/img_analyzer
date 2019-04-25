@@ -7,20 +7,25 @@ class ImgAnalyze
     # 画像解析処理
     #
     def analize(file, type)
-        ret_response = {err_msg: [], color_items: []}
+        ret_response = {err_msg: [], color_items: []} # color_itemsは色解析しかできない今だけ
 
+        # ファイル存在チェック
+        if file == nil
+            ret_response[:err_msg] << "ファイルを指定してください。"
+            return ret_response
+        end
         # サイズチェック
         if file.size > 4.megabyte
             mb = ApplicationController.helpers.number_to_human_size(file.size)
             ret_response[:err_msg] << "ファイルサイズは4MB以内のものを選択してください。[選択画像: #{mb}]"
+            return ret_response
         end
         # バイナリチェック
         result_msg = check_binaly_file(file)
         if result_msg.length != 0
             ret_response[:err_msg] += result_msg
+            return ret_response
         end
-        # API呼出前のエラーはまとめて返却
-        return ret_response unless ret_response[:err_msg].empty?
         
         # ImageAnnotator インスタンス生成
         image_annotator = Google::Cloud::Vision::ImageAnnotator.new(
@@ -28,13 +33,14 @@ class ImgAnalyze
             credentials: ENV["GOOGLE_APPLICATION_CREDENTIALS"]
         )
         # APIリクエスト作成
-        base64image = file.read # TODO: [2]画像かhtmlURLか判別して content: source: 分岐させる
+        base64image = file.read # TODO: 画像かhtmlURLか判別して content: source: 分岐させる
         requests_content = format_requests(base64image, type)
         requests = [requests_content]
 
         # Cloud Vision APIからレスポンスを受け取る
         api_res = image_annotator.batch_annotate_images(requests)
-        # APIエラー
+        
+        # APIエラーチェック
         api_err = api_res.responses[0].error.to_h
         if api_err.length != 0
             ret_response[:err_msg] << "APIエラーが発生しました。 [ message: #{api_err[:message]} code: #{api_err[:code]} ]"
@@ -57,8 +63,6 @@ class ImgAnalyze
         return ret_response
     end
 
-    
-
     # 
     # リクエストコンテンツ作成
     #
@@ -73,7 +77,7 @@ class ImgAnalyze
             detection_type = { type: "#{type}_DETECTION".to_sym}
         end
         
-        # TODO: [2]htmlURLが渡された場合は image:{source: {"htmlURL"}}にする
+        # TODO: htmlURLが渡された場合は image:{source: {"htmlURL"}}にする
         contents = { image: { content: image }, features: [detection_type] }
     end
 
@@ -146,12 +150,14 @@ class ImgAnalyze
                 # icon: icoリソースタイプで判断
                 correct_format = true
             end
-            err_msg << '拡張子とファイルの中身が一致しませんでした。別の画像を選択してください。' unless correct_format
+
+            unless correct_format
+                err_msg << '拡張子とファイルの中身が一致しませんでした。別の画像を選択してください。'
+            end
         end
 
         return err_msg
     end
-
 end
 
 ########################### リクエスト参考

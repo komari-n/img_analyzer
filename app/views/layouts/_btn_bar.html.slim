@@ -1,0 +1,20 @@
+.btn_bar
+  ul.ana_btns_list
+    / li.ana_btn_wrap
+    /   input type="button" form="analize" name="detail" value="詳細解析"
+    li.ana_btn_wrap
+      / 色解析
+      button.ana_btn type="submit" name="IMAGE" form="analize"
+        | color!
+    li.ana_btn_wrap
+      / 顔解析
+      button.ana_btn type="submit" name="FACE" form="analize"
+        | face!
+    li.ana_btn_wrap
+      / テキスト抽出
+      button.ana_btn type="submit" name="TEXT" form="analize"
+        | text!
+    li.ana_btn_wrap
+      / 関連画像検索
+      button.ana_btn type="submit" name="WEB" form="analize"
+        | web!

@@ -140,8 +140,8 @@ a {
         //background: lightcoral;
 
         #target_img {
-          max-width: 394px;
-          max-height: 700px;
+          max-width: 700px;
+          max-height: 394px;
           vertical-align: middle;
           box-shadow: 0 0 3px 0;
           border-radius: 10px;
@@ -247,7 +247,6 @@ a {
 }
 
 @media screen and (max-width: 1000px) {
-  /* -------------------- 検証中 --------------------*/
   .ana_img_wrap {
     flex-direction: column;
     align-items: center;
@@ -291,8 +290,6 @@ a {
     padding-left: 0;
   }
 }
-
-/* -------------------- 検証中 --------------------*/
 
 // ローディング画面
 .load_screen {

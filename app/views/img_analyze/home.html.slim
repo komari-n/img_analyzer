@@ -1,16 +1,16 @@
-// メッセージエリア
+/ メッセージエリア
 .msg_area
 .ana_img_wrap
-  // 解析対象画像領域
+  / 解析対象画像領域
   .ana_img_area
     img#target_img
 
-  // 解析結果領域
+  / 解析結果領域
   .result_area
 
 = form_tag '/result', method: :post, multipart: true, remote: true, id: :analize, name: "ana_form"
   = hidden_field_tag :authenticity_token, form_authenticity_token 
-  // ドロップ領域
+  / ドロップ領域
   #drop_area
     #drop_area_wrap
       p.drop_info
@@ -18,5 +18,5 @@
       p
         |または
       input#file_input type="file" accept="image/jpeg,image/png,image/gif,image/bmp,.ico" value="ファイルを選択" name="file" form="analize"
-      // value="何解析を指定したか"
+      / value="何解析を指定したか"
       input#ana_type type="hidden" name="type" value=""

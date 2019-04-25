@@ -2,6 +2,7 @@ $(function() {
   /**
    * ---------- イベントリスナー ----------
    */
+
   // 解析ボタン
   var anaBtn = $(".ana_btn");
   anaBtn.on("click", onClickAnaBtn);
@@ -18,7 +19,7 @@ $(function() {
   // ファイル参照ボタン
   fileInput.on("change", onChangeFileInput).on("click", onClickFileInput);
 
-  // 入力form
+  // 入力フォーム
   var analize = $("#analize");
   analize.on("ajax:complete", ajaxComplete);
 
@@ -30,13 +31,17 @@ $(function() {
   function onClickAnaBtn() {
     $("#ana_type").val(anaBtn.attr("name"));
     $(".load_screen").css("display", "flex");
+
+    if (anaBtn.attr("form") != "analize") {
+      $(".load_screen").css("display", "none");
+    }
   }
 
   // ドロップ領域 ドラッグオーバー
   function onDragOver(e) {
     e.preventDefault();
 
-    // 許可しないファイルならエフェクトは変わらない
+    // 許可したファイルの場合のみエフェクト反応
     var mimeType = e.originalEvent.dataTransfer.items[0]["type"];
     if (isCorrectMimeType(mimeType) == true) {
       addEnterEffect();
@@ -48,6 +53,7 @@ $(function() {
     e.preventDefault();
     removeEnterEffect();
   }
+
   // ドロップ領域 ドロップ
   function onDrop(e) {
     e.preventDefault();
@@ -57,68 +63,55 @@ $(function() {
     // MIMEタイプをチェック
     var mimeType = dataTransfer.items[0]["type"];
     if (isCorrectMimeType(mimeType) != true) {
-      // TODO: [*]こっちは見た目で分かるようになってると思う…。
       return;
     }
     // ドロップしたファイル数をチェック
     if (isSingleFile(dataTransfer.files) != true) {
-      // TODO: [*]エラーメッセージを出したほうがいいかも？
       return;
     }
-    // エラーメッセージをチェック
-    if (isExistErrMessage() == true) {
-      $(".msg_area").empty();
-      $(".msg_area").css("display", "none");
-    }
 
-    // 解析結果を初期化
-    $(".result_area").empty();
-    // 選択ファイルが1つなら画像成形
+    // 画面表示を初期化
+    displayRefresh();
+
+    // ドロップ画像表示
     var files = dataTransfer.files;
-    organizeFiles(files);
-
-    // TODO: [2]ローカル画像ファイル htmlURL 画面内画像 の場合分け
-    // TODO: [2]htmlURLの場合  クロスドメイン引っかかる railsでリクエスト JSONPでリクエスト
-    // TODO: [3]画面内画像の場合
+    setImageSrc(files);
   }
+
   // ドロップ領域 クリック
   function onClickDropArea() {
-    // もしクリックしたらファイル選択表示
+    // ファイル選択表示
     fileInput.click();
   }
 
   // ファイル参照ボタン チェンジ
   function onChangeFileInput(e) {
-    // 前回入力値を初期化
-    $("#target_img").attr("src", "");
-    $(".result_area").empty();
+    // 画面表示を初期化
+    displayRefresh();
 
-    // エラーメッセージをチェック
-    if (isExistErrMessage() == true) {
-      $(".msg_area").empty();
-      $(".msg_area").css("display", "none");
-    }
-
-    // ファイルが選択された場合のみ画像成形
     var files = e.originalEvent.target.files;
-    if (isExistFiles(files) == true) {
-      // 参照ボタンからだと複数選択できないのでファイル数チェックはなし
-      organizeFiles(files);
+    if (isExistFiles(files)) {
+      // 画像表示
+      setImageSrc(files);
+    } else {
+      // ファイルを選択しなければ表示画像は消す
+      $("#target_img").attr("src", "");
     }
   }
+
   // ファイル参照ボタン クリック
   function onClickFileInput(e) {
     // 無限ループ(ドロップ領域クリック時)・バブリング防止
     e.stopPropagation();
   }
 
-  // 入力form ajaxリクエスト完了
+  // 入力フォーム ajaxリクエスト完了
   function ajaxComplete() {
     $(".load_screen").fadeOut(1200);
   }
 
   /**
-   * ---------- ロジックメソッド ----------
+   * ---------- ロジック ----------
    */
 
   // ドロップ領域のエフェクト制御
@@ -131,9 +124,9 @@ $(function() {
   }
 
   // 画像成形処理
-  function organizeFiles(files) {
+  function setImageSrc(files) {
     var image = $("#target_img");
-    var blobURL = URL.createObjectURL(files[0]); // 存在チェックはされてる前提…。
+    var blobURL = URL.createObjectURL(files[0]);
 
     // input type='file"要素にファイルを設定
     fileInput.get(0).files = files;
@@ -144,6 +137,20 @@ $(function() {
     $(image).on("load", function() {
       URL.revokeObjectURL(blobURL);
     });
+  }
+
+  // 画面表示リフレッシュ
+  function displayRefresh() {
+    // エラーメッセージリフレッシュ
+    if ($(".msg_text").length) {
+      $("msg_area").empty();
+      $(".msg_area").css("display", "none");
+    }
+
+    // 解析結果リフレッシュ
+    if ($(".response_html").length) {
+      $(".result_area").empty();
+    }
   }
 
   /**
@@ -178,16 +185,8 @@ $(function() {
     return false;
   }
 
-  // エラーメッセージチェック
-  function isExistErrMessage() {
-    if ($(".msg_text").length) {
-      return true;
-    }
-    return false;
-  }
-
   /**
-   * ---------- 画面共通 ----------
+   * ---------- そのた ----------
    */
 
   // 指定領域以外はファイルドロップ禁止

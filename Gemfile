@@ -14,7 +14,7 @@ gem 'bootstrap-sass',      '3.4.1' # 使わないかも
 gem 'google-cloud-vision', '0.32.2'
 gem 'dotenv-rails',        '2.7.2'
 gem 'chart-js-rails',      '0.1.6'
-gem 'rmagick',             '3.1.0', require: 'RMagick'
+gem 'rmagick',             '3.1.0'
 
 group :development, :test do
   gem 'byebug',       '9.0.6', platform: :mri

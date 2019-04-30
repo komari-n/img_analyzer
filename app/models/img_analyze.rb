@@ -71,7 +71,7 @@ class ImgAnalyze
         # ImageAnnotator インスタンス生成
         image_annotator = Google::Cloud::Vision::ImageAnnotator.new(
             version: :v1,
-            credentials: credentials: JSON.parse(ENV["GOOGLE_APPLICATION_CREDENTIALS"])
+            credentials: JSON.parse(ENV["GOOGLE_APPLICATION_CREDENTIALS"])
         )
 
         # リクエスト作成

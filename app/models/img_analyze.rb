@@ -1,73 +1,83 @@
 require "google/cloud/vision"
+require "RMagick"
 
 class ImgAnalyze
     include ActiveModel::Model
+    include Magick
 
     #
-    # 画像解析処理
+    # 色解析処理
     #
-    def analize(file, type)
-        ret_response = {err_msg: [], color_items: []} # color_itemsは色解析しかできない今だけ
+    def analize_color(file)
+        ret_response = {err_msg: nil}
 
-        # ファイル存在チェック
-        if file == nil
-            ret_response[:err_msg] << "ファイルを指定してください。"
+        # バリデーション
+        ret_response[:err_msg] = validation(file)
+        if ret_response[:err_msg] != nil
             return ret_response
         end
-        # サイズチェック
-        if file.size > 4.megabyte
-            mb = ApplicationController.helpers.number_to_human_size(file.size)
-            ret_response[:err_msg] << "ファイルサイズは4MB以内のものを選択してください。[選択画像: #{mb}]"
-            return ret_response
-        end
-        # バイナリチェック
-        result_msg = check_binaly_file(file)
-        if result_msg.length != 0
-            ret_response[:err_msg] += result_msg
-            return ret_response
-        end
-        
-        # ImageAnnotator インスタンス生成
-        image_annotator = Google::Cloud::Vision::ImageAnnotator.new(
-            version: :v1,
-            credentials: JSON.parse(ENV["GOOGLE_APPLICATION_CREDENTIALS"])
-        )
-        # APIリクエスト作成
-        base64image = file.read # TODO: 画像かhtmlURLか判別して content: source: 分岐させる
-        requests_content = format_requests(base64image, type)
-        requests = [requests_content]
 
-        # Cloud Vision APIからレスポンスを受け取る
-        api_res = image_annotator.batch_annotate_images(requests)
-        
+        # apiリクエスト送信
+        api_res = send_api_request(file, "IMAGE")
         # APIエラーチェック
         api_err = api_res.responses[0].error.to_h
         if api_err.length != 0
-            ret_response[:err_msg] << "APIエラーが発生しました。 [ message: #{api_err[:message]} code: #{api_err[:code]} ]"
+            ret_response[:err_msg] = "APIエラーが発生しました。 [ message: #{api_err[:message]} code: #{api_err[:code]} ]"
             return ret_response
         end
 
-        # ユーザのリクエストに応じてレスポンス成形
-        case type.to_sym
-        when :IMAGE
-            colors    = api_res.responses[0].
-                        image_properties_annotation.dominant_colors.colors
-            
-            ret_response[:color_items] = format_response_image(colors)
-        when :CROP
-            # TODO: [3]クロップヒントレスポ成形処理
-        else
-            # TODO: [2]●●●_DETECTIONレスポ成形処理
-        end
+        # レスポンス成形
+        colors = api_res.responses[0].
+                image_properties_annotation.dominant_colors.colors
+        ret_response[:color_items] = format_response_image(colors)
 
         return ret_response
     end
 
-    # 
-    # リクエストコンテンツ作成
     #
-    def format_requests(image, type)
-        # caseはスコープを作らない
+    # 表情解析処理
+    #
+    def analize_face(file)
+        ret_response = {err_msg: nil, face_anno_items: [annotated_image: "", extraction_targets_info: [] ]}
+
+        # バリデーション
+        ret_response[:err_msg] = validation(file)
+        if ret_response[:err_msg] != nil
+            return ret_response
+        end
+        
+        # apiリクエスト送信
+        api_res = send_api_request(file, "FACE")
+        # APIエラーチェック
+        api_err = api_res.responses[0].error.to_h
+        if api_err.length != 0
+            ret_response[:err_msg] = "APIエラーが発生しました。 [ message: #{api_err[:message]} code: #{api_err[:code]} ]"
+            return ret_response
+        end
+
+        # レスポンス生成
+        hash_res = api_res.to_h
+        face_annotations = hash_res[:responses][0][:face_annotations]
+        # TODO: 表情解析できなかった場合
+        ret_response[:face_anno_items] = format_response_face(face_annotations, file.path)
+
+        return ret_response
+    end
+
+    #
+    # Cloud Vision API リクエスト送信
+    #
+    def send_api_request(file, type)
+        # ImageAnnotator インスタンス生成
+        image_annotator = Google::Cloud::Vision::ImageAnnotator.new(
+            version: :v1,
+            credentials: ENV["GOOGLE_APPLICATION_CREDENTIALS"]
+        )
+        # 本番環境はこっち
+        # credentials: credentials: JSON.parse(ENV["GOOGLE_APPLICATION_CREDENTIALS"])
+
+        # リクエスト作成
+        blob = file.read # TODO: 画像かhtmlURLか判別して content: source: 分岐させる
         case type.to_sym
         when :IMAGE
             detection_type = { type: :IMAGE_PROPERTIES }
@@ -76,9 +86,11 @@ class ImgAnalyze
         else # reatureが●●●_DETECTIONのもの
             detection_type = { type: "#{type}_DETECTION".to_sym}
         end
-        
-        # TODO: htmlURLが渡された場合は image:{source: {"htmlURL"}}にする
-        contents = { image: { content: image }, features: [detection_type] }
+        requests_content = { image: { content: blob }, features: [detection_type] }
+        requests = [requests_content]
+
+        # リクエスト送信
+        image_annotator.batch_annotate_images(requests)
     end
 
     #
@@ -86,7 +98,7 @@ class ImgAnalyze
     #
     def format_response_image(colors)
         total_score = 0
-        responses = []
+        response = []
         
         # apiレスポンスから必要なデータを抽出
         colors.each do |i|
@@ -97,30 +109,187 @@ class ImgAnalyze
             rgb   = "rgb(#{items[:color].values.join(", ")})".gsub('.0', '')
             score = (items[:score] * 100).round(1)
 
-            responses << {rgb: rgb, score: score}
+            response << {rgb: rgb, score: score}
             total_score += score
         end
         # 小数点2位を四捨五入
         total_score = total_score.round(1)
 
         # トータルスコア / 各スコアのパーセンテージを計算
-        responses.each_with_index do |view_item, idx|
+        response.each_with_index do |view_item, idx|
             dec_score = "#{view_item[:score]}".to_d
             dec_total = "#{total_score}".to_d
             percentage = ( ( dec_score.div( dec_total, 4 ) ).to_f * 100 )
             # パーセンテージは小数点2位を四捨五入
-            responses[idx][:percentage] = percentage.round(1)
+            response[idx][:percentage] = percentage.round(1)
         end
 
         # トータルスコアを先頭に追加
-        responses.unshift( total_score: total_score )
+        response.unshift( total_score: total_score )
+    end
+
+    #
+    # 表情解析レスポンス成形
+    #
+    def format_response_face(face_annotations, file_path)
+        response = []
+
+        extraction_targets_info = []               # 抽出対象ごとの個別情報
+        image  = Magick::ImageList.new(file_path)  # ポイント描画用画像
+        dr = Draw.new                              # 描画バッファ
+
+        # 描画バッファの設定
+        dr.fill('none')
+        dr.stroke = "#20F010 "
+        dr.stroke_width(6)
+        dr.font_size(20)
+
+        face_annotations.each_with_index do |face_annotation, idx|
+            # 描画バッファにポイントを追加
+            buffer_points(dr, face_annotation)
+            # 顔を複数検出していた場合は番号を振る
+            if face_annotations.size > 1
+                bounding_poly = face_annotation[:bounding_poly][:vertices]
+                x = bounding_poly[0][:x] + 20
+                y = bounding_poly[0][:y] + 15
+                # 文字用に設定
+                dr.fill('#20F010')
+                dr.stroke_width(1)
+                dr.font_size(16)
+                dr.font_weight(200)
+                # 文字を描画
+                dr.text(x, y, "face" + (idx + 1).to_s)
+                # ポイント用に再設定
+                dr.fill('none')
+                dr.stroke_width(6)
+                dr.font_size(20)
+                dr.font_weight(400)
+            end
+
+            # 抽出対象ごとの個別情報を取得
+            extraction_target_info = format_face_extraction_target_info(face_annotation)
+            extraction_targets_info << extraction_target_info
+        end
+
+         # ポイント描画用画像に描画バッファを出力
+         dr.draw(image)
+         # base64形式に変換
+         annotated_image = Base64.strict_encode64(image.to_blob)
+         annotated_image_url = "data:image/jpeg;base64," + annotated_image
+
+        response = [
+            annotated_image_url: annotated_image_url,
+            extraction_targets_info: extraction_targets_info
+        ]
+    end
+
+    #
+    # 描画バッファにポイントを追加
+    #
+    def buffer_points(dr, face_annotation)
+        # 矩形
+        bounding_poly = face_annotation[:bounding_poly][:vertices]
+        fd_bounding_poly = face_annotation[:fd_bounding_poly][:vertices]
+        # 特徴点
+        annotations = []
+        face_annotation[:landmarks].each do |item|
+            # 小数点以下切り捨て
+            x = item[:position][:x].to_i
+            y = item[:position][:y].to_i
+            annotations << { x: x, y: y }
+        end
+
+         # 矩形をdraw領域に描画
+        dr.polyline(bounding_poly[0][:x], bounding_poly[0][:y],
+            bounding_poly[1][:x], bounding_poly[1][:y],
+            bounding_poly[2][:x], bounding_poly[2][:y],
+            bounding_poly[3][:x], bounding_poly[3][:y],
+            bounding_poly[0][:x], bounding_poly[0][:y])
+        dr.polyline(fd_bounding_poly[0][:x], fd_bounding_poly[0][:y],
+                    fd_bounding_poly[1][:x], fd_bounding_poly[1][:y],
+                    fd_bounding_poly[2][:x], fd_bounding_poly[2][:y],
+                    fd_bounding_poly[3][:x], fd_bounding_poly[3][:y],
+                    fd_bounding_poly[0][:x], fd_bounding_poly[0][:y])
+
+         # ポイントをdraw領域に描画
+        annotations.each do |points|
+            dr.text((points[:x]-3), (points[:y]+5), "-")
+        end
+    end
+
+    #
+    # 抽出対象ごとの個別情報(顔解析)を成形
+    #
+    def format_face_extraction_target_info(face_annotation)
+        extraction_target_info = {}
+
+        # 角度
+        roll_angle = face_annotation[:roll_angle].to_i # ロール角(顔の傾き)
+        tilt_angle = face_annotation[:tilt_angle].to_i # ピッチ角(顔の上下)
+        pan_angle = face_annotation[:detection_confidence].to_i # ヨー角(顔の左右)
+
+        # 解析結果の信頼性 TODO 計算方法怪しい
+        detection_confidence = "#{face_annotation[:detection_confidence]}".to_d * 100
+        detection_confidence = detection_confidence.to_f.round(1)
+
+        # 感情予測
+        likelihoods = face_annotation.select {|key, value| key.to_s.match(/_likelihood/)}
+        ret_likelihoods = {}
+        # 返却値作成
+        likelihoods.each do |key, value|
+            # viewに直接出力できるようキーを短縮
+            short_key = key.to_s.sub!(/_likelihood/, "").to_sym
+
+            # 6つの予測値を数値に変換
+            case value
+            when :UNKNOWN
+                ret_likelihoods[short_key] = 0
+            when :VERY_UNLIKELY
+                ret_likelihoods[short_key] = 1
+            when :UNLIKELY
+                ret_likelihoods[short_key] = 2
+            when :POSSIBLE
+                ret_likelihoods[short_key] = 3
+            when :LIKELY
+                ret_likelihoods[short_key] = 4
+            when :VERY_LIKELY
+                ret_likelihoods[short_key] = 5
+            end
+        end
+
+        extraction_target_info = {
+            detection_confidence: detection_confidence,
+            roll_angle: roll_angle,
+            tilt_angle: tilt_angle,
+            pan_angle: pan_angle,
+            likelihoods: ret_likelihoods
+        }
+    end
+
+    #
+    # バリデーション
+    #
+    def validation(file)
+        # ファイル存在チェック
+        if file == nil
+            return "ファイルを選択してください。"
+        end
+        # サイズチェック
+        if file.size > 4.megabyte
+            mb = ApplicationController.helpers.number_to_human_size(file.size)
+            return "ファイルサイズは4MB以内のものを選択してください。[選択画像: #{mb}]"
+        end
+        # バイナリチェック
+        result_msg = check_binaly_file(file)
+        if result_msg != nil
+            return result_msg
+        end
     end
 
     #
     # バイナリファイルチェック
     #
     def check_binaly_file(file)
-        err_msg = []
 
         File.open(file.path, 'rb') do |f|
             begin
@@ -129,7 +298,7 @@ class ImgAnalyze
                 f.seek(-12, IO::SEEK_END)
                 footer = f.read(12)
             rescue
-                err_msg << '画像を読み込めませんでした。別の画像を選択してください。'
+                return '画像を読み込めませんでした。別の画像を選択してください。'
             end
 
             # ファイルフォーマットで中身と拡張子が一致しているか判断
@@ -152,11 +321,9 @@ class ImgAnalyze
             end
 
             unless correct_format
-                err_msg << '拡張子とファイルの中身が一致しませんでした。別の画像を選択してください。'
+                return '拡張子とファイルの中身が一致しませんでした。別の画像を選択してください。'
             end
         end
-
-        return err_msg
     end
 end
 

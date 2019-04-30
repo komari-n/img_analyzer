@@ -20,8 +20,8 @@ $(function() {
   fileInput.on("change", onChangeFileInput).on("click", onClickFileInput);
 
   // 入力フォーム
-  var analize = $("#analize");
-  analize.on("ajax:complete", ajaxComplete);
+  var analize_form = $("#analize_form");
+  analize_form.on("ajax:complete", ajaxComplete);
 
   /**
    * ---------- イベントリスナー コールバック ----------
@@ -29,10 +29,13 @@ $(function() {
 
   // 解析ボタン クリック
   function onClickAnaBtn() {
-    $("#ana_type").val(anaBtn.attr("name"));
+    // アクション先を指定
+    $("#analize_form").attr("action", $(this).data("action"));
+
+    // ロード画面を表示
     $(".load_screen").css("display", "flex");
 
-    if (anaBtn.attr("form") != "analize") {
+    if (anaBtn.attr("form") != "analize_form") {
       $(".load_screen").css("display", "none");
     }
   }

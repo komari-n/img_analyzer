@@ -1,12 +1,17 @@
 |
-  var err = "#{@results[:err_msg].length != 0}";
+  var err = "#{@results[:err_msg] != nil}";
   var msg_area = $('.msg_area');
+
   if(err == "true"){
+    // エラーメッセージを表示
     msg_area.empty();
     msg_area.css('display', 'block');
     msg_area.append("#{j(render partial: 'err_msg', locals: {err_msg: @results[:err_msg]})}");
+
   }else{
+    // エラーメッセージを初期化
     msg_area.empty();
     msg_area.css('display', 'none');
+    
     $('.result_area').html("#{j(render partial: 'ajax_ana_color', locals: {color_items: @results[:color_items]})}");
   }

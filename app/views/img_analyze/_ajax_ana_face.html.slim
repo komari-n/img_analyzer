@@ -1,0 +1,57 @@
+.response_html
+  .face_annotation_wrap
+    h2 Face Annotation
+    - if face_anno_items[0][:extraction_targets_info].size == 0
+      .face_not_found_message
+        h2 Could not extract faces...
+        h3 Please select Face photo!
+    / 抽出できた顔の数だけ結果を表示
+    - face_anno_items[0][:extraction_targets_info].each_with_index do |target_info, idx|
+      - if face_anno_items[0][:extraction_targets_info].size > 1
+        p.face_num
+          | Face #{idx+1}
+      .emotions_wrap
+        h3 Expected Emotions
+        ul.face_results
+          li
+            / 予想できる感情(感情の度合いはjs,cssで表現)
+            - target_info[:likelihoods].each do |key, value|
+              .emotion id="#{key}_#{idx}"
+                h4 #{key}
+                .likelihood
+                .likelihood
+                .likelihood
+                .likelihood
+                .likelihood
+      / 角度
+      .angles_wrap
+        h3 Face Angles
+        p Tilt #{target_info[:roll_angle]}°
+        p Up or Down #{target_info[:tilt_angle]}°
+        p Left or Right #{target_info[:pan_angle]}°
+      / 結果の信頼性
+      .confidence_wrap
+        h3 Confidence
+        p #{target_info[:detection_confidence]}
+        .max_confidence
+          .actual_confidence id="confidence_#{idx}"
+  javascript:
+    // 解析結果画像に置き換え
+    $("#target_img").attr("src", "#{face_anno_items[0][:annotated_image_url]}");
+    var extraction_targets_info = #{{face_anno_items[0][:extraction_targets_info].to_json}};
+    // 解析できた人数分ループ
+    for(var target_idx=0; target_idx < extraction_targets_info.length; target_idx++){
+      // 解析の信頼性を表示
+      var width = extraction_targets_info[target_idx]['detection_confidence']
+      $("#confidence_" + target_idx).css('width', width + "%")
+
+      // 予測された感情度度合いを表示
+      var likelihoods = extraction_targets_info[target_idx]['likelihoods'];
+      for(emotion_key in likelihoods){
+        // 感情の種類分ループ
+        for(var i=0; i<likelihoods[emotion_key]; i++){
+          // 各勘定を5段階のブロックで表す
+          $("#" + emotion_key + "_" + target_idx + " > div:eq(" + i + ")").removeClass("likelihood").addClass("likelihood2");
+        }
+      }
+    }

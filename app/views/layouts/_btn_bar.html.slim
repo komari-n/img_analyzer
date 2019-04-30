@@ -4,17 +4,17 @@
     /   input type="button" form="analize" name="detail" value="詳細解析"
     li.ana_btn_wrap
       / 色解析
-      button.ana_btn type="submit" name="IMAGE" form="analize"
+      button#image.ana_btn type="submit" data-action="/color_result" form="analize_form"
         | color!
     li.ana_btn_wrap
       / 顔解析
-      button.ana_btn type="submit" name="FACE" form="analize"
+      button#face.ana_btn type="submit" data-action="/face_result" form="analize_form"
         | face!
     li.ana_btn_wrap
       / テキスト抽出
-      button.ana_btn type="submit" name="TEXT" form="analize"
+      button#text.ana_btn type="submit" data-action="/text_result" form="analize_form"
         | text!
     li.ana_btn_wrap
       / 関連画像検索
-      button.ana_btn type="submit" name="WEB" form="analize"
+      button#web.ana_btn type="submit" data-action="/text_result" form="analize_form"
         | web!
